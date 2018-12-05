@@ -43,6 +43,14 @@ namespace ToDoList.Controllers
         return View(model);
       }
 
+        [HttpGet("/categories/{categoryId}/items/{itemId}/delete")]
+        public ActionResult Delete(int itemId, int categoryId)
+        {
+            Item item = Item.Find(itemId);
+            item.Delete();
+            return View();
+        }
+
       [HttpPost("/categories/{categoryId}/items/{itemId}")]
       public ActionResult Update(int categoryId, int itemId, string newDescription)
       {

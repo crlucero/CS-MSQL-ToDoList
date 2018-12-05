@@ -20,6 +20,22 @@ namespace ToDoList.Tests
     }
 
     [TestMethod]
+    public void Delete_DeletesItem_Null()
+    {
+      // Arrange
+      Item testItem = new Item("Mow the lawn", 1);
+      testItem.Save();
+      string deletedDescription = "";
+
+      //Act
+      testItem.Delete();
+      string result = Item.Find(testItem.GetId()).GetDescription();
+
+      //Assert
+      Assert.AreEqual(deletedDescription, result);
+    }
+
+    [TestMethod]
     public void ItemConstructor_CreatesInstanceOfItem_Item()
     {
       Item newItem = new Item("test", 1);
