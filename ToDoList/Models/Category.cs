@@ -130,7 +130,6 @@ namespace ToDoList.Models
                 return (idEquality && nameEquality);
             }
         }
-
         public void Save()
         {
             MySqlConnection conn = DB.Connection();
