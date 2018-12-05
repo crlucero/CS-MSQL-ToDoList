@@ -54,7 +54,6 @@ namespace ToDoList.Controllers
             model.Add("category", category);
             item.Delete();
             return View(model);
-            
         }
 
       [HttpPost("/categories/{categoryId}/items/{itemId}")]
