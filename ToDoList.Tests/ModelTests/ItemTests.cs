@@ -19,21 +19,21 @@ namespace ToDoList.Tests
       DBConfiguration.ConnectionString = "server=localhost;user id=root;password=root;port=8889;database=to_do_list_test;";
     }
 
-    [TestMethod]
-    public void Delete_DeletesItem_Null()
-    {
-      // Arrange
-      Item testItem = new Item("Mow the lawn", 1);
-      testItem.Save();
-      string deletedDescription = "";
+    // [TestMethod]
+    // public void Delete_DeletesItem_Null()
+    // {
+    //   // Arrange
+    //   Item testItem = new Item("Mow the lawn", 1);
+    //   testItem.Save();
+    //   string deletedDescription = "";
 
-      //Act
-      testItem.Delete();
-      string result = Item.Find(testItem.GetId()).GetDescription();
+    //   //Act
+    //   testItem.Delete();
+    //   string result = Item.Find(testItem.GetId()).GetDescription();
 
-      //Assert
-      Assert.AreEqual(deletedDescription, result);
-    }
+    //   //Assert
+    //   Assert.AreEqual(deletedDescription, result);
+    // }
 
     [TestMethod]
     public void ItemConstructor_CreatesInstanceOfItem_Item()

@@ -43,16 +43,32 @@ namespace ToDoList.Controllers
         return View(model);
       }
 
+      //Object method that requires new object to be created in order to delete.
+        // [HttpGet("/categories/{categoryId}/items/{itemId}/delete")]
+        // public ActionResult Delete(int itemId, int categoryId)
+        // {
+
+        //     Item item = Item.Find(itemId);
+        //     Dictionary<string, object> model = new Dictionary<string, object>();
+        //     Category category = Category.Find(categoryId);
+        //     model.Add("item", item);
+        //     model.Add("category", category);
+        //     item.Delete();
+        //     return View(model);
+        // }
+
+
+
+      //Static method
         [HttpGet("/categories/{categoryId}/items/{itemId}/delete")]
         public ActionResult Delete(int itemId, int categoryId)
         {
-
             Item item = Item.Find(itemId);
-            Dictionary<string, object> model = new Dictionary<string, object>();
             Category category = Category.Find(categoryId);
+            Dictionary<string, object> model = new Dictionary<string, object>();
             model.Add("item", item);
             model.Add("category", category);
-            item.Delete();
+            Item.Delete(itemId);
             return View(model);
         }
 

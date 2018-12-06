@@ -192,20 +192,20 @@ namespace ToDoList.Tests
         //     Assert.AreEqual(deletedDescription, result);
         // }
 
-        public void Delete_DeletesName_Null()
-        {
-            // Arrange
-            Category testCategory = new Category("Mow the lawn", 1);
-            testCategory.Save();
-            string deletedName = "";
+        // public void Delete_DeletesName_Null()
+        // {
+        //     // Arrange
+        //     Category testCategory = new Category("Mow the lawn", 1);
+        //     testCategory.Save();
+        //     string deletedName = "";
 
-            //Act
-            testCategory.Delete();
-            string result = Category.Find(testCategory.GetId()).GetName();
+        //     //Act
+        //     testCategory.Delete();
+        //     string result = Category.Find(testCategory.GetId()).GetName();
 
-            //Assert
-            Assert.AreEqual(deletedName, result);
-        }
+        //     //Assert
+        //     Assert.AreEqual(deletedName, result);
+        // }
 
     }
 }

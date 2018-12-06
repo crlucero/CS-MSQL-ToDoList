@@ -38,7 +38,7 @@ namespace ToDoList.Models
             }
         }
 
-        public void Delete()
+        public static void Delete(int id)
         {
             MySqlConnection conn = DB.Connection();
             conn.Open();
@@ -46,7 +46,7 @@ namespace ToDoList.Models
             cmd.CommandText = @"DELETE FROM categories WHERE id = @thisId;";
             MySqlParameter thisId = new MySqlParameter();
             thisId.ParameterName = "@thisId";
-            thisId.Value = _id;
+            thisId.Value = id;
             cmd.Parameters.Add(thisId);
             cmd.ExecuteNonQuery();
             conn.Close();
@@ -56,15 +56,16 @@ namespace ToDoList.Models
             }
         }
 
-        public void DeleteItems()
+
+        public static void DeleteItems(int id)
         {
             MySqlConnection conn = DB.Connection();
             conn.Open();
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"DELETE * FROM items WHERE category_id = (@category_id);";
+            cmd.CommandText = @"DELETE FROM items WHERE category_id = @categoryId;";
             MySqlParameter categoryId = new MySqlParameter();
-            categoryId.ParameterName = "@category_id";
-            categoryId.Value = _id;
+            categoryId.ParameterName = "@categoryid";
+            categoryId.Value = id;
             cmd.Parameters.Add(categoryId);
             cmd.ExecuteNonQuery();
             conn.Close();
