@@ -38,43 +38,6 @@ namespace ToDoList.Models
             }
         }
 
-        public static void Delete(int id)
-        {
-            MySqlConnection conn = DB.Connection();
-            conn.Open();
-            var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"DELETE FROM categories WHERE id = @thisId;";
-            MySqlParameter thisId = new MySqlParameter();
-            thisId.ParameterName = "@thisId";
-            thisId.Value = id;
-            cmd.Parameters.Add(thisId);
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            if (conn != null)
-            {
-                conn.Dispose();
-            }
-        }
-
-
-        public static void DeleteItems(int id)
-        {
-            MySqlConnection conn = DB.Connection();
-            conn.Open();
-            var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"DELETE FROM items WHERE category_id = @categoryId;";
-            MySqlParameter categoryId = new MySqlParameter();
-            categoryId.ParameterName = "@categoryid";
-            categoryId.Value = id;
-            cmd.Parameters.Add(categoryId);
-            cmd.ExecuteNonQuery();
-            conn.Close();
-            if (conn != null)
-            {
-                conn.Dispose();
-            }
-        }
-
         public static List<Category> GetAll()
         {
             List<Category> allCategories = new List<Category> { };
@@ -127,30 +90,47 @@ namespace ToDoList.Models
 
         public List<Item> GetItems()
         {
-            List<Item> allCategoryItems = new List<Item> { };
             MySqlConnection conn = DB.Connection();
             conn.Open();
             var cmd = conn.CreateCommand() as MySqlCommand;
-            cmd.CommandText = @"SELECT * FROM items WHERE category_id = @category_id;";
-            MySqlParameter categoryId = new MySqlParameter();
-            categoryId.ParameterName = "@category_id";
-            categoryId.Value = this._id;
-            cmd.Parameters.Add(categoryId);
+            cmd.CommandText = @"SELECT item_id FROM categories_items WHERE category_id = @CategoryId;";
+            MySqlParameter categoryIdParameter = new MySqlParameter();
+            categoryIdParameter.ParameterName = "@CategoryId";
+            categoryIdParameter.Value = _id;
+            cmd.Parameters.Add(categoryIdParameter);
             var rdr = cmd.ExecuteReader() as MySqlDataReader;
+            List<int> itemIds = new List<int> { };
             while (rdr.Read())
             {
                 int itemId = rdr.GetInt32(0);
-                string itemDescription = rdr.GetString(1);
-                int itemCategoryId = rdr.GetInt32(2);
-                Item newItem = new Item(itemDescription, itemCategoryId, itemId);
-                allCategoryItems.Add(newItem);
+                itemIds.Add(itemId);
+            }
+            rdr.Dispose();
+            List<Item> items = new List<Item> { };
+            foreach (int itemId in itemIds)
+            {
+                var itemQuery = conn.CreateCommand() as MySqlCommand;
+                itemQuery.CommandText = @"SELECT * FROM items WHERE id = @ItemId;";
+                MySqlParameter itemIdParameter = new MySqlParameter();
+                itemIdParameter.ParameterName = "@ItemId";
+                itemIdParameter.Value = itemId;
+                itemQuery.Parameters.Add(itemIdParameter);
+                var itemQueryRdr = itemQuery.ExecuteReader() as MySqlDataReader;
+                while (itemQueryRdr.Read())
+                {
+                    int thisItemId = itemQueryRdr.GetInt32(0);
+                    string itemDescription = itemQueryRdr.GetString(1);
+                    Item foundItem = new Item(itemDescription, thisItemId);
+                    items.Add(foundItem);
+                }
+                itemQueryRdr.Dispose();
             }
             conn.Close();
             if (conn != null)
             {
                 conn.Dispose();
             }
-            return allCategoryItems;
+            return items;
         }
 
         public override bool Equals(System.Object otherCategory)
@@ -167,6 +147,7 @@ namespace ToDoList.Models
                 return (idEquality && nameEquality);
             }
         }
+
         public void Save()
         {
             MySqlConnection conn = DB.Connection();
@@ -179,6 +160,44 @@ namespace ToDoList.Models
             cmd.Parameters.Add(name);
             cmd.ExecuteNonQuery();
             _id = (int)cmd.LastInsertedId;
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+        }
+
+        public void Delete()
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            MySqlCommand cmd = new MySqlCommand("DELETE FROM categories WHERE id = @CategoryId; DELETE FROM categories_items WHERE category_id = @CategoryId;", conn);
+            MySqlParameter categoryIdParameter = new MySqlParameter();
+            categoryIdParameter.ParameterName = "@CategoryId";
+            categoryIdParameter.Value = this.GetId();
+            cmd.Parameters.Add(categoryIdParameter);
+            cmd.ExecuteNonQuery();
+            if (conn != null)
+            {
+                conn.Close();
+            }
+        }
+
+        public void AddItem(Item newItem)
+        {
+            MySqlConnection conn = DB.Connection();
+            conn.Open();
+            var cmd = conn.CreateCommand() as MySqlCommand;
+            cmd.CommandText = @"INSERT INTO categories_items (category_id, item_id) VALUES (@CategoryId, @ItemId);";
+            MySqlParameter category_id = new MySqlParameter();
+            category_id.ParameterName = "@CategoryId";
+            category_id.Value = _id;
+            cmd.Parameters.Add(category_id);
+            MySqlParameter item_id = new MySqlParameter();
+            item_id.ParameterName = "@ItemId";
+            item_id.Value = newItem.GetId();
+            cmd.Parameters.Add(item_id);
+            cmd.ExecuteNonQuery();
             conn.Close();
             if (conn != null)
             {
